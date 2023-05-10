@@ -1,0 +1,252 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<math.h>
+
+
+#define BLANK ' '
+#define TAB '\t'
+#define MAX 50
+
+
+char infix[50],prefix[50];
+int stack[50];
+int top=-1;
+int isEmpty();
+int white_space(char symbol);
+void push(int symbol);
+int pop();
+int priority(char symbol);
+void infix_to_prefix();
+int eval_post();
+int checkassociatitvity(char symbol);
+void strreverse(char symbol[20]);
+
+
+int isEmpty()
+{
+	if(top==-1)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+
+int white_space(char symbol)
+{
+	if(symbol==BLANK || symbol ==TAB)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+
+void push(int symbol)
+{
+	if(top>=MAX-1)
+	{
+		printf("\nStack overflow");
+		exit(1);
+	}
+	else
+	{
+		stack[++top]=symbol;
+	}
+}
+
+
+int pop()
+{
+	if(isEmpty())
+	{
+		printf("\nStack underflow");
+		exit(1);
+	}
+	else
+	{
+		return stack[top--];
+	}
+}
+int priority(char symbol)
+{
+	
+	switch(symbol)
+	{
+		
+		case '(':
+			return 0;
+			break;
+		case '+':
+		case '-':
+			return 1;
+			break;
+		case '*':
+		case '/':
+		case '%':
+			return 2;
+			break;
+		case '^':
+			return 3;
+			break;
+		default:
+			return 0;
+			break;
+	}
+}
+int checkassociatitvity(char symbol)
+{
+	switch(symbol)
+	{
+		case '+':
+		case '-':
+		case '*':
+		case '/':
+			return 1;
+		case '^':
+			return 2;
+		
+	}	
+	
+}
+void strreverse(char symbol[20])
+{
+   int length,i,temp;
+   length=strlen(symbol)-1;
+   for(i=0;i<strlen(symbol)/2;i++)
+   {
+   	temp=symbol[i];
+   	symbol[i]=symbol[length];
+   	symbol[length--]=temp;
+   }
+}
+
+
+void infix_to_prefix()
+{
+	int i,p=0;
+	char next,symbol;
+	strreverse(infix);
+	for(i=0;i<strlen(infix);i++)
+	{
+		symbol=infix[i];
+		if(!white_space(symbol))
+		{
+			switch(symbol)
+			{
+				case '(':
+					while((next=pop())!=')')
+					{
+						prefix[p++]=next;
+					}
+					break;
+				case ')':
+					push(symbol);
+					break;
+				case '+':
+				case '-':
+				case '*':
+				case '/':
+				case '%':
+				case '^':
+					if(priority(symbol)!=priority(stack[top]))
+					{
+						while(!isEmpty() && priority(symbol)<=priority(stack[top]))
+						{
+							prefix[p++]=pop();
+						}
+						push(symbol);
+					}
+					else
+					{
+						int x=checkassociatitvity(symbol);
+						if(x=1)
+						{
+							push(symbol);
+						}
+						else
+						{
+							prefix[p++]=pop();
+							push(symbol);
+						}
+					}
+					break;
+				default :
+					prefix[p++]=symbol;
+					
+			}	
+		}
+	}
+	
+	while(!isEmpty())
+	{
+		prefix[p++]=pop();
+	}
+	strreverse(prefix);
+	prefix[p]='\0';
+}
+
+
+int eval_post()
+{
+	int i,temp,a,b,result;
+	for(i=0;i<strlen(prefix);i++)
+	{
+		if(prefix[i]<='9' && prefix[i]>='0')
+		{
+			push(prefix[i]-'0');
+		}
+		else
+		{
+			a=pop();
+			b=pop();
+			
+			switch(prefix[i])
+			{
+				case '+':
+					temp=b+a;
+					break;
+				case '-':
+					temp=b-a;
+					break;
+				case '*':
+					temp=b*a;
+					break;
+				case '/':
+					temp=b/a;
+					break;
+				case '%':
+					temp=b%a;
+					break;
+				case '^':
+					temp=pow(b,a);
+					break;
+			}
+			push(temp);
+			
+		}
+		
+	}
+	result=pop();
+	return result;
+}
+void main()
+{
+	int value;
+	printf("\nEnter the infix expression: ");
+	scanf("%s",infix);
+	puts(infix);
+	printf("\n");
+	infix_to_prefix();
+	puts(prefix);
+	value =eval_post();
+	printf("\nThe value of the inputted infix expression is :%d\n",value);
+}
+
