@@ -1,0 +1,181 @@
+#include <stdio.h>
+#include<string.h>
+#include <stdlib.h>
+#include<math.h>
+
+
+int i,j,c=0,size;
+int top=-1;
+char a[20];
+char b[20];
+char z[20];
+void eval();
+void push(char item);
+char pop();
+int prio(char op);
+int prio(char op)
+{
+if(op=='(')
+return 1;                                                    
+else if(op=='+' || op=='-')
+return 2;
+else if(op=='*' || op=='/' || op=='%')
+return 3;
+else if(op=='^')
+return 4;
+else
+return 0;
+}
+void push(char item)
+{
+
+
+top++;
+a[top]=item;
+c++;
+
+
+
+
+}
+char pop()
+{
+char item;
+
+
+
+
+item=a[top];
+top--;
+c--;
+
+
+return item;
+}
+
+
+
+
+void main()
+{
+
+
+char opr,k=0;
+int ret,rett;
+printf("\n");
+printf("enter the expression\n");
+gets(z);
+size=strlen(z);
+//ret=prio(a[1]);
+//printf("%d",ret);
+for(i=0;i<=size;i++)
+{
+ret=prio(z[i]);
+//printf("%c",a[i]);
+
+
+if(ret==1)
+{
+push(z[i]);
+}
+else if(z[i]==')')
+{
+for(j=top;a[j]!='(';j--)
+{
+opr=pop();
+printf("%c",opr);
+b[k]=opr;
+k++;
+}
+pop();
+}
+else if(z[i]=='\0')
+{
+for(j=top;j!=-1;j--)
+{
+opr=pop();
+printf("%c",opr);
+b[k]=opr;
+k++;
+}
+}
+else if(ret==2 || ret==3 || ret==4)
+{
+e:
+rett=prio(a[top]);
+if(top==-1)
+{
+push(z[i]);
+}
+else if(ret>rett)
+{
+push(z[i]);
+}
+else if(ret<rett || ret == rett)
+{
+opr=pop();
+printf("%c",opr);
+b[k]=opr;
+k++;
+goto e;
+}
+}
+else if(ret==0)
+{
+printf("%c",z[i]);
+b[k]=z[i];
+k++;
+}
+}
+printf("\n");
+eval();
+}
+//evaluation
+void eval()
+{
+int k;
+int e1,e2,temp,res;
+for(k=0;k<size;k++)
+{
+if(b[k]<='9'&&b[k]>='0')
+{
+push(b[k]-'0');
+}
+else
+        {
+       
+        e2=pop();
+            e1=pop();
+            switch(b[k])
+            {
+                case '+':
+                    temp=e1+e2; break;
+                case '-':
+                    temp=e1-e2;break;
+                case '*':
+                    temp=e1*e2;break;
+                case '/':
+                    temp=e1/e2;break;
+                case '%':
+                    temp=e1%e2;break;
+                case '^':
+                    temp=pow(e1,e2);
+            }
+            push(temp);
+
+
+
+
+}
+}
+res=pop();
+printf("%d",res);
+
+
+}
+
+
+
+
+
+
